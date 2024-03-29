@@ -1,24 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+
+import React from 'react';
+import { BrowserRouter as Router, Route,Routes, useNavigate } from 'react-router-dom';
+import Login from './components/Login';
+
+import Register from './components/Register';
+import Notes from './components/Notes';
+import NoteForm from './components/NoteForm';
+import ErrorPage from './components/ErrorPage';
 
 function App() {
+  const isAuthenticated = !!localStorage.getItem('token');
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <Routes>
+          <Route path="/" element={<ErrorPage />} />
+          <Route path="/login" element={<Login/>} />
+          <Route path="/register" element={<Register/>} />
+          <Route path="/notes" element={<Notes/>} />
+          <Route path="/create-note" element={<NoteForm/>} />
+          <Route path="/edit-note/:id" element={<NoteForm/>} />
+          
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+function PrivateRoute({ component: Component, ...rest }) {
+  const isAuthenticated = !!localStorage.getItem('token');
+  const navig=useNavigate();
+
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        isAuthenticated ? (
+          <Component {...props} />
+        ) : (
+          navig('/login')
+        )
+      }
+    />
   );
 }
 
